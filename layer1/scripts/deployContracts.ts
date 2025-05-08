@@ -1,6 +1,7 @@
-import { ethers } from 'hardhat';
 import fs from 'fs';
 import path from 'path';
+
+import { ethers } from 'hardhat';
 
 async function main() {
   const [deployer] = await ethers.getSigners();

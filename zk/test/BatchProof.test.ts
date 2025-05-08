@@ -1,5 +1,5 @@
-import { zkit } from 'hardhat';
 import { expect } from 'chai';
+import { zkit } from 'hardhat';
 
 describe('BatchProof', () => {
   it('should compute final state from initial state and txs', async () => {

@@ -7,16 +7,22 @@
     "layer2",
     "zk"
   ],
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@solarity/hardhat-zkit": "^0.5.16",
     "@types/node": "^22.15.3",
     "@typescript-eslint/eslint-plugin": "^8.31.1",
     "@typescript-eslint/parser": "^8.31.1",
+    "dotenv": "^16.5.0",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.2",
+    "eslint-import-resolver-typescript": "^4.3.4",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.3.1",
-    "dotenv": "^16.5.0",
     "ethers": "^6.13.7",
     "hardhat": "^2.23.0",
     "prettier": "^3.5.3",

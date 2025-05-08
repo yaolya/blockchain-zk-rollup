@@ -4,8 +4,9 @@ import '@solarity/hardhat-zkit';
 import '@solarity/chai-zkit';
 import '@nomicfoundation/hardhat-ethers';
 
-import { HardhatUserConfig } from 'hardhat/config';
 import fs from 'fs';
+
+import { HardhatUserConfig } from 'hardhat/config';
 
 const accounts: string[] = JSON.parse(
   fs.readFileSync('./hardhat_test_accounts.json', 'utf-8'),

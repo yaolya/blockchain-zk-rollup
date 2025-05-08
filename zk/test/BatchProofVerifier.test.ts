@@ -1,6 +1,5 @@
-import { ethers } from 'hardhat';
-import { zkit } from 'hardhat';
 import { expect } from 'chai';
+import { ethers, zkit } from 'hardhat';
 
 describe('BatchProofVerifier', function () {
   it('should verify a valid proof', async () => {

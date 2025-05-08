@@ -1,9 +1,9 @@
-import { expect } from 'chai';
-import { ethers } from 'hardhat';
 import { formatBytes32String } from '@ethersproject/strings';
 import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers';
+import { expect } from 'chai';
+import { ethers, zkit } from 'hardhat';
+
 import { RollupManager, MockSequencerRegistry } from '../typechain-types';
-import { zkit } from 'hardhat';
 
 describe('RollupManager (with mock SequencerRegistry)', function () {
   let mockSequencerRegistry: MockSequencerRegistry,

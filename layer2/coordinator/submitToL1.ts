@@ -1,9 +1,9 @@
 import 'dotenv/config';
-import { ContractTransactionResponse } from 'ethers';
-import { ethers } from 'ethers';
-import { zkit } from 'hardhat';
 import fs from 'fs';
 import path from 'path';
+
+import { ContractTransactionResponse, ethers } from 'ethers';
+import { zkit } from 'hardhat';
 
 type SubmitInput = {
   initialState: number;

@@ -1,10 +1,10 @@
-import { applyTransactions } from '../vm/vm';
-import { buildMerkleRoot } from '../vm/merkleTree';
-import { appendBatchLog } from './logger';
-import { submitToL1 } from '../coordinator/submitToL1';
-
 import fs from 'fs';
 import path from 'path';
+
+import { appendBatchLog } from './logger';
+import { submitToL1 } from '../coordinator/submitToL1';
+import { buildMerkleRoot } from '../vm/merkleTree';
+import { applyTransactions } from '../vm/vm';
 
 type Transaction = {
   op: string;

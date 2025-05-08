@@ -1,6 +1,7 @@
 import { HardhatEthersSigner } from '@nomicfoundation/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
+
 import { DPoSManager } from '../typechain-types';
 
 describe('DPoSManager', function () {

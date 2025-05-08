@@ -6,5 +6,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "skipLibCheck": true
-  }
+  },
+  "exclude": ["**/generated-types", "node_modules"]
 }
