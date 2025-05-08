@@ -1,0 +1,12 @@
+node_modules/
+
+layer2/
+
+.env
+.env.*
+
+.git/
+.gitignore
+
+.vscode/
+
