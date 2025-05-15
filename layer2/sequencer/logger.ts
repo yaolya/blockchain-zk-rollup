@@ -1,10 +1,7 @@
 import fs from 'fs';
-import path from 'path';
-
-const logDir = path.resolve(process.cwd(), 'analytics', 'logs');
-const logFile = path.join(logDir, 'batchLog.json');
 
 type LogEntry = {
+  nodeId?: string;
   batchId: number;
   timestamp: string;
   transactionCount: number;
@@ -14,17 +11,18 @@ type LogEntry = {
   finalState: number;
 };
 
-function appendBatchLog(entry: LogEntry) {
+function appendBatchLog(entry: LogEntry, filePath: string) {
   let logs = [];
-  if (fs.existsSync(logFile)) {
+  if (fs.existsSync(filePath)) {
     try {
-      logs = JSON.parse(fs.readFileSync(logFile, 'utf-8'));
+      logs = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     } catch {
-      console.error('[⚠️] Failed to parse existing batchLog.json');
+      console.error(`Failed to parse existing ${filePath}`);
     }
   }
+
   logs.push(entry);
-  fs.writeFileSync(logFile, JSON.stringify(logs, null, 2));
+  fs.writeFileSync(filePath, JSON.stringify(logs, null, 2));
 }
 
 export { appendBatchLog };

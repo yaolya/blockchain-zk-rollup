@@ -18,16 +18,14 @@ async function waitForDeployedJson() {
           return deployed;
         }
       } catch {
-        console.log(
-          `⏳ deployed.json not ready (attempt ${i + 1}). Retrying...`,
-        );
+        console.log(`deployed.json not ready (attempt ${i + 1}). Retrying...`);
       }
     } else {
-      console.log(`⏳ deployed.json not found (attempt ${i + 1}). Retrying...`);
+      console.log(`deployed.json not found (attempt ${i + 1}). Retrying...`);
     }
     await new Promise((res) => setTimeout(res, RETRY_DELAY_MS));
   }
-  throw new Error('[❌] deployed.json not ready after multiple retries.');
+  throw new Error('deployed.json not ready after multiple retries.');
 }
 
 async function main() {
@@ -35,13 +33,10 @@ async function main() {
   const deployed = await waitForDeployedJson();
   console.log('deployed.json loaded!');
 
-  const keyPath = path.join(process.cwd(), '../shared', 'sequencer.key');
-  const privateKey = fs.readFileSync(keyPath, 'utf-8').trim();
-
   const template = fs
     .readFileSync(templatePath, 'utf-8')
     .replace('{{ROLLUP_MANAGER_ADDRESS}}', deployed.RollupManager)
-    .replace('{{SEQUENCER_PRIVATE_KEY}}', privateKey);
+    .replace('{{DPOS_MANAGER_ADDRESS}}', deployed.DPoSManager);
 
   fs.writeFileSync(envPath, template);
 
@@ -49,6 +44,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('[❌] Error generating .env:', error);
+  console.error('Error generating .env:', error);
   process.exit(1);
 });

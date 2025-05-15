@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  layer1:
+    build:
+      context: .
+      dockerfile: ./layer1/Dockerfile
+    container_name: layer1
+    env_file:
+      - ./layer1/.env
+    ports:
+      - '8545:8545'
+    volumes:
+      - ./shared:/app/shared
+    networks:
+      - blockchain-net
+

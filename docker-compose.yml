@@ -14,8 +14,6 @@ services:
       - ./shared:/app/shared
     networks:
       - blockchain-net
-    # entrypoint: ["/bin/sh"]
-    # command: ["-c", "sleep infinity"]
 
   layer2:
     build:

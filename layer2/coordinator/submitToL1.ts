@@ -58,6 +58,14 @@ async function submitToL1({
     txs,
   };
 
+  const isActive = await isActiveSequencer(signer);
+  if (!isActive) {
+    console.log(
+      `[${process.env.NODE_ID}] Not the active sequencer. Skipping batch.`,
+    );
+    return;
+  }
+
   const proof = await circuit.generateProof(inputs);
   const calldata = await circuit.generateCalldata(proof);
   console.log(calldata.publicSignals);
@@ -82,6 +90,20 @@ async function submitToL1({
   console.log('Tx Hash:', tx.hash);
 
   await tx.wait();
+}
+
+async function isActiveSequencer(signer: ethers.Wallet): Promise<boolean> {
+  const dposManagerAddress = process.env.DPOS_MANAGER_ADDRESS;
+  if (!dposManagerAddress) throw new Error('DPOS_MANAGER_ADDRESS not set');
+
+  const abi = ['function getActiveSequencer() view returns (address)'];
+  const contract = new ethers.Contract(
+    dposManagerAddress,
+    abi,
+    signer.provider,
+  );
+  const active = await contract.getActiveSequencer();
+  return active.toLowerCase() === signer.address.toLowerCase();
 }
 
 export { submitToL1 };

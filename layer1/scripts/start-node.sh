@@ -11,9 +11,6 @@ NODE_PID=$!
 echo "[*] Waiting 5s for Hardhat node to be ready..."
 sleep 5
 
-echo "[*] Extracting sequencer key..."
-npx hardhat run scripts/extractHardhatKey.ts --network localhost
-
 echo "[*] Deploying contracts..."
 npx hardhat run scripts/deployContracts.ts --network localhost
 
