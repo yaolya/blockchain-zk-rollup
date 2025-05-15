@@ -47,17 +47,6 @@ async function main() {
   const outputPath = path.join(process.cwd(), '../shared', 'deployed.json');
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.log('Contract addresses written to shared/deployed.json');
-
-  const artifactPath = path.resolve(
-    __dirname,
-    '../artifacts/contracts/RollupManager.sol/RollupManager.json',
-  );
-  const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf8'));
-  fs.writeFileSync(
-    path.join(process.cwd(), '../shared', 'RollupManager.abi.json'),
-    JSON.stringify(artifact.abi, null, 2),
-  );
-  console.log('RollupManager.abi written to shared/RollupManager.abi.json');
 }
 
 main().catch((error) => {

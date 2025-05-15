@@ -37,16 +37,13 @@ async function submitToL1({
     ),
   );
 
-  const RollupManagerAbi = JSON.parse(
-    fs.readFileSync(
-      path.join(process.cwd(), '../shared', 'RollupManager.abi.json'),
-      'utf-8',
-    ),
-  );
+  const abi = [
+    'function submitBatch(uint256[2], uint256[2][2], uint256[2], uint256[1], bytes32)',
+  ];
 
   const rollupManager = new ethers.Contract(
     deployed.RollupManager,
-    RollupManagerAbi,
+    abi,
     signer,
   );
 

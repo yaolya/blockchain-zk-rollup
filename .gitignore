@@ -30,8 +30,6 @@ zkit/
 verifiers/
 
 shared/deployed.json
-shared/RollupManager.abi.json
-shared/sequencer.key
 
 analytics/logs/
 analytics/logs/archive/
