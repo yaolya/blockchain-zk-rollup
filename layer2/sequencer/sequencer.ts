@@ -64,6 +64,11 @@ async function registerAndVote() {
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const signer = new ethers.Wallet(privateKey, provider);
 
+  const code = await provider.getCode(dposManagerAddress);
+  if (code === '0x') {
+    throw new Error(`[${nodeId}] No contract at ${dposManagerAddress}`);
+  }
+
   const abi = [
     'function registerCandidate() public',
     'function delegate(address candidate) public',

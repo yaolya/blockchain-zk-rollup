@@ -13,8 +13,10 @@ async function main() {
   console.log('DPoSManager deployed to:', dposManager.target);
 
   // Register & vote for deployer as active sequencer (public address only)
-  await dposManager.registerCandidate();
-  await dposManager.delegate(deployer.address);
+  const tx1 = await dposManager.registerCandidate();
+  await tx1.wait();
+  const tx2 = await dposManager.delegate(deployer.address);
+  await tx2.wait();
   console.log('Deployer registered and voted as active sequencer.');
 
   const SequencerRegistry =

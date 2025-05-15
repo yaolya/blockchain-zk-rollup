@@ -42,7 +42,7 @@ cat >> docker-compose.generated.yml <<EOL
       - SEQUENCER_PRIVATE_KEY=$PRIVATE_KEY
     volumes:
       - ./shared:/app/shared
-      - ./analytics/logs/$NODE_ID:/app/analytics/logs
+      - ./analytics/logs/$NODE_ID:/app/layer2/analytics/logs/$NODE_ID
     networks:
       - blockchain-net
 
