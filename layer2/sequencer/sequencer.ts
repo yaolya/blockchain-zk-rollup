@@ -56,10 +56,31 @@ if (fs.existsSync(logFilePath)) {
   console.log(`[${nodeId}] Cleaned batchLog.json for new session`);
 }
 
+async function waitForContractCode(
+  address: string,
+  maxRetries = 30,
+  delayMs = 1000,
+) {
+  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL!);
+
+  for (let i = 0; i < maxRetries; i++) {
+    const code = await provider.getCode(address);
+    if (code !== '0x') return;
+    console.log(
+      `[${process.env.NODE_ID}] Waiting for contract at ${address}...`,
+    );
+    await new Promise((r) => setTimeout(r, delayMs));
+  }
+
+  throw new Error(`[${process.env.NODE_ID}] No contract at ${address}`);
+}
+
 async function registerAndVote() {
   const privateKey = process.env.SEQUENCER_PRIVATE_KEY!;
   const rpcUrl = process.env.RPC_URL!;
   const dposManagerAddress = process.env.DPOS_MANAGER_ADDRESS!;
+
+  await waitForContractCode(dposManagerAddress!);
 
   const provider = new ethers.JsonRpcProvider(rpcUrl);
   const signer = new ethers.Wallet(privateKey, provider);
@@ -72,15 +93,18 @@ async function registerAndVote() {
   const abi = [
     'function registerCandidate() public',
     'function delegate(address candidate) public',
+    'function candidates(address) view returns (address addr, uint256 votes, bool registered)',
   ];
 
   const dpos = new ethers.Contract(dposManagerAddress, abi, signer);
 
-  try {
-    const tx1 = await dpos.registerCandidate();
-    await tx1.wait();
+  const candidate = await dpos.candidates(signer.address);
+
+  if (!candidate.registered) {
+    const tx = await dpos.registerCandidate();
+    await tx.wait();
     console.log(`[${nodeId}] Registered as candidate.`);
-  } catch {
+  } else {
     console.log(`[${nodeId}] Already registered as candidate.`);
   }
 
