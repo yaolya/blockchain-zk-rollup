@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 
+import { Mutex } from 'async-mutex';
 import { ContractTransactionResponse, ethers } from 'ethers';
 import { zkit } from 'hardhat';
 
@@ -13,6 +14,8 @@ type SubmitInput = {
   txs: number[];
   merkleRoot: string;
 };
+
+const proofMutex = new Mutex();
 
 async function submitToL1({
   initialState,
@@ -69,7 +72,9 @@ async function submitToL1({
     );
   }
 
-  const proof = await circuit.generateProof(inputs);
+  const proof = await proofMutex.runExclusive(() =>
+    circuit.generateProof(inputs),
+  );
   const calldata = await circuit.generateCalldata(proof);
   console.log(calldata.publicSignals);
   let tx: ContractTransactionResponse;

@@ -107,7 +107,7 @@ async function registerAndVote() {
     console.log(`[${nodeId}] Already registered as candidate.`);
   }
 
-  const tx2 = await dpos.delegate(signer.address);
+  const tx2 = await dpos.delegate(signer.address, { gasLimit: 5_000_000 });
   await tx2.wait();
   console.log(`[${nodeId}] Voted for self.`);
 }
@@ -117,7 +117,7 @@ async function receiveTransaction(tx: Transaction) {
 
   if (pendingTxs.length >= BATCH_SIZE_LIMIT) {
     console.log(`[${nodeId}] Threshold reached. Executing batch...`);
-    await executeBatch();
+    executeBatch();
   }
 }
 
@@ -128,8 +128,6 @@ async function executeBatch() {
   }
 
   const batchTxs = pendingTxs.splice(0, BATCH_SIZE_LIMIT);
-  const timestamp = new Date().toISOString();
-  batchCounter++;
 
   const previousStateValue = state;
 
@@ -143,9 +141,12 @@ async function executeBatch() {
       txs: batchTxs.map((tx) => tx.value),
       merkleRoot: root,
     });
+    const timestamp = new Date().toISOString();
 
     state = newState;
     cumulativeGas += gasPerTx;
+
+    batchCounter++;
 
     const logEntry = {
       nodeId,
@@ -178,7 +179,7 @@ async function emitTransactions() {
       key: `key_${sentTxs + i}`,
       value: Math.floor(Math.random() * 100),
     };
-    await receiveTransaction(tx);
+    receiveTransaction(tx);
     sentTxs += 1;
   }
   console.log('Simulation complete');
@@ -186,7 +187,7 @@ async function emitTransactions() {
 
 async function main() {
   await registerAndVote();
-  await emitTransactions();
+  emitTransactions();
 }
 
 main().catch((err) => {
