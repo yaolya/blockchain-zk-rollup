@@ -24,7 +24,7 @@ const pendingTxs: Transaction[] = [];
 let state = 0;
 
 let batchCounter = 0;
-let totalEstimatedGasUsed = 0;
+let cumulativeGas = 0n;
 
 const baseLogDir = path.resolve(process.cwd(), 'analytics', 'logs', nodeId);
 const logFilePath = path.join(baseLogDir, 'batchLog.json');
@@ -123,7 +123,7 @@ main().catch((err) => {
   console.error(`[${nodeId}] DPoS init failed:`, err);
 });
 
-function receiveTransaction(tx: Transaction) {
+async function receiveTransaction(tx: Transaction) {
   pendingTxs.push(tx);
 
   const estimatedGas = estimateBatchGas(pendingTxs.length);
@@ -154,14 +154,12 @@ async function executeBatch() {
   const timestamp = new Date().toISOString();
   batchCounter++;
 
-  const estimatedGas = estimateBatchGas(batchTxs.length);
-
   const previousStateValue = state;
 
   try {
     const root = buildMerkleRoot(batchTxs);
 
-    await submitToL1({
+    const gasPerTx = await submitToL1({
       initialState: previousStateValue,
       finalState: applyTransactions(state, batchTxs),
       txs: batchTxs.map((tx) => tx.value),
@@ -169,15 +167,15 @@ async function executeBatch() {
     });
 
     state = applyTransactions(previousStateValue, batchTxs);
-    totalEstimatedGasUsed += estimatedGas;
+    cumulativeGas += gasPerTx;
 
     const logEntry = {
       nodeId,
       batchId: batchCounter,
       timestamp,
       transactionCount: batchTxs.length,
-      estimatedGas,
-      cumulativeGas: totalEstimatedGasUsed,
+      gasPerTx: gasPerTx.toString(),
+      cumulativeGas: cumulativeGas.toString(),
       merkleRoot: root,
       finalState: state,
     };

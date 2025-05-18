@@ -5,8 +5,8 @@ type LogEntry = {
   batchId: number;
   timestamp: string;
   transactionCount: number;
-  estimatedGas: number;
-  cumulativeGas: number;
+  gasPerTx: string;
+  cumulativeGas: string;
   merkleRoot: string;
   finalState: number;
 };

@@ -92,7 +92,13 @@ async function submitToL1({
   console.log('Batch submitted to RollupManager!');
   console.log('Tx Hash:', tx.hash);
 
-  await tx.wait();
+  const receipt = await tx.wait();
+  const gasUsed = receipt?.gasUsed;
+  if (!gasUsed) {
+    throw new Error(`[${process.env.NODE_ID}] No gasUsed in receipt`);
+  }
+  const costPerTx = gasUsed / BigInt(BATCH_SIZE_LIMIT);
+  return costPerTx;
 }
 
 async function isActiveSequencer(signer: ethers.Wallet): Promise<boolean> {
