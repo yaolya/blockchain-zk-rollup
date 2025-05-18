@@ -16,9 +16,9 @@ type Transaction = {
 
 const nodeId = process.env.NODE_ID || 'default-node';
 
-const BATCH_SIZE_LIMIT = 5;
-const BATCH_INTERVAL_MS = 60_000;
-const MAX_ESTIMATED_GAS_PER_BATCH = 500_000;
+const BATCH_SIZE_LIMIT = 20;
+const BATCH_INTERVAL_MS = 3_000;
+const MAX_ESTIMATED_GAS_PER_BATCH = 1_500_000;
 
 const pendingTxs: Transaction[] = [];
 let state = 0;
@@ -114,6 +114,8 @@ async function registerAndVote() {
 }
 
 async function main() {
+  const dposManagerAddress = process.env.DPOS_MANAGER_ADDRESS!;
+  await waitForContractCode(dposManagerAddress!);
   await registerAndVote();
 }
 
@@ -153,36 +155,41 @@ async function executeBatch() {
   batchCounter++;
 
   const estimatedGas = estimateBatchGas(batchTxs.length);
-  totalEstimatedGasUsed += estimatedGas;
 
   const previousStateValue = state;
-  state = applyTransactions(state, batchTxs);
-  const currentStateValue = state;
-  const root = buildMerkleRoot(batchTxs);
 
-  await submitToL1({
-    initialState: previousStateValue,
-    finalState: currentStateValue,
-    txs: batchTxs.map((tx) => tx.value),
-    merkleRoot: root,
-  });
+  try {
+    const root = buildMerkleRoot(batchTxs);
 
-  const logEntry = {
-    nodeId,
-    batchId: batchCounter,
-    timestamp,
-    transactionCount: batchTxs.length,
-    estimatedGas,
-    cumulativeGas: totalEstimatedGasUsed,
-    merkleRoot: root,
-    finalState: state,
-  };
+    await submitToL1({
+      initialState: previousStateValue,
+      finalState: applyTransactions(state, batchTxs),
+      txs: batchTxs.map((tx) => tx.value),
+      merkleRoot: root,
+    });
 
-  console.log(`[${nodeId}] Batch #${batchCounter} executed at ${timestamp}`);
-  console.log(`[${nodeId}] Logging batch to ${logFilePath}`);
-  appendBatchLog(logEntry, logFilePath);
+    state = applyTransactions(previousStateValue, batchTxs);
+    totalEstimatedGasUsed += estimatedGas;
 
-  return root;
+    const logEntry = {
+      nodeId,
+      batchId: batchCounter,
+      timestamp,
+      transactionCount: batchTxs.length,
+      estimatedGas,
+      cumulativeGas: totalEstimatedGasUsed,
+      merkleRoot: root,
+      finalState: state,
+    };
+
+    console.log(`[${nodeId}] Batch #${batchCounter} executed at ${timestamp}`);
+    console.log(`[${nodeId}] Logging batch to ${logFilePath}`);
+    appendBatchLog(logEntry, logFilePath);
+
+    return root;
+  } catch (error) {
+    console.log(error instanceof Error ? error.message : error);
+  }
 }
 
 function estimateBatchGas(numTxs: number) {

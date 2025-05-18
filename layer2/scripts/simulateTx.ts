@@ -1,8 +1,8 @@
 import { receiveTransaction } from '../sequencer/sequencer';
 
-const TX_PER_INTERVAL = 1;
-const INTERVAL_MS = 1000;
-const MAX_TOTAL_TX = 50;
+const TX_PER_INTERVAL = 10;
+const INTERVAL_MS = 250;
+const MAX_TOTAL_TX = 2000;
 
 let sentTxs = 0;
 

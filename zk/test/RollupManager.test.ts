@@ -46,8 +46,11 @@ describe('RollupManager (with mock SequencerRegistry)', function () {
 
     const circuit = await zkit.getCircuit('BatchProof');
 
-    const txs = [3n, 4n, 2n, 3n, 1n];
+    const BATCH_SIZE = 20;
     const initialState = 10n;
+    const txs = Array.from({ length: BATCH_SIZE }, () =>
+      BigInt(Math.floor(Math.random() * 10) + 1),
+    );
     const finalState = initialState + txs.reduce((a, b) => a + b, 0n);
 
     const proof = await circuit.generateProof({
@@ -89,8 +92,11 @@ describe('RollupManager (with mock SequencerRegistry)', function () {
 
     const circuit = await zkit.getCircuit('BatchProof');
 
-    const txs = [3n, 4n, 2n, 3n, 1n];
+    const BATCH_SIZE = 20;
     const initialState = 10n;
+    const txs = Array.from({ length: BATCH_SIZE }, () =>
+      BigInt(Math.floor(Math.random() * 10) + 1),
+    );
     const finalState = initialState + txs.reduce((a, b) => a + b, 0n);
 
     const proof = await circuit.generateProof({

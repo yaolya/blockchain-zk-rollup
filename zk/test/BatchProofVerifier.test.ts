@@ -5,8 +5,11 @@ describe('BatchProofVerifier', function () {
   it('should verify a valid proof', async () => {
     const circuit = await zkit.getCircuit('BatchProof');
 
-    const initialState = BigInt(10);
-    const txs = [3n, 4n, 2n, 3n, 1n];
+    const BATCH_SIZE = 20;
+    const initialState = 10n;
+    const txs = Array.from({ length: BATCH_SIZE }, () =>
+      BigInt(Math.floor(Math.random() * 10) + 1),
+    );
     const finalState = initialState + txs.reduce((a, b) => a + b, 0n);
 
     const inputs = { initialState, finalState, txs };
@@ -36,8 +39,11 @@ describe('BatchProofVerifier', function () {
   it('should reject an invalid proof', async () => {
     const circuit = await zkit.getCircuit('BatchProof');
 
+    const BATCH_SIZE = 20;
     const initialState = 10n;
-    const txs = [3n, 4n, 2n, 3n, 1n];
+    const txs = Array.from({ length: BATCH_SIZE }, () =>
+      BigInt(Math.floor(Math.random() * 10) + 1),
+    );
     const finalState = initialState + txs.reduce((a, b) => a + b, 0n);
 
     const inputs = { initialState, finalState, txs };

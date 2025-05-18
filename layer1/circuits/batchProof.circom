@@ -18,4 +18,4 @@ template BatchProof(n) {
     finalState === result;
 }
 
-component main = BatchProof(5);
+component main = BatchProof(20);

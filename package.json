@@ -5,7 +5,8 @@
   "workspaces": [
     "layer1",
     "layer2",
-    "zk"
+    "zk",
+    "analytics"
   ],
   "scripts": {
     "lint": "eslint .",

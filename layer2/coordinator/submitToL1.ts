@@ -5,6 +5,8 @@ import path from 'path';
 import { ContractTransactionResponse, ethers } from 'ethers';
 import { zkit } from 'hardhat';
 
+const BATCH_SIZE_LIMIT = 20;
+
 type SubmitInput = {
   initialState: number;
   finalState: number;
@@ -49,18 +51,22 @@ async function submitToL1({
 
   const circuit = await zkit.getCircuit('BatchProof');
 
+  const paddedTxs = [...txs];
+  while (paddedTxs.length < BATCH_SIZE_LIMIT) {
+    paddedTxs.push(0);
+  }
+
   const inputs = {
     initialState,
     finalState,
-    txs,
+    txs: paddedTxs,
   };
 
   const isActive = await isActiveSequencer(signer);
   if (!isActive) {
-    console.log(
+    throw new Error(
       `[${process.env.NODE_ID}] Not the active sequencer. Skipping batch.`,
     );
-    return;
   }
 
   const proof = await circuit.generateProof(inputs);
