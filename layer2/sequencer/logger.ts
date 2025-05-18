@@ -12,17 +12,8 @@ type LogEntry = {
 };
 
 function appendBatchLog(entry: LogEntry, filePath: string) {
-  let logs = [];
-  if (fs.existsSync(filePath)) {
-    try {
-      logs = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-    } catch {
-      console.error(`Failed to parse existing ${filePath}`);
-    }
-  }
-
-  logs.push(entry);
-  fs.writeFileSync(filePath, JSON.stringify(logs, null, 2));
+  const line = JSON.stringify(entry);
+  fs.appendFileSync(filePath, line + '\n', 'utf-8');
 }
 
 export { appendBatchLog };

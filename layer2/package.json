@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node scripts/generateEnv.ts && concurrently \"npm run start-sequencer\" \"npm run simulate\"",
-    "start-sequencer": "npx hardhat run sequencer/sequencer.ts",
-    "simulate": "sh -c 'sleep 30 && npx hardhat run scripts/simulateTx.ts'",
-    "start-dashboard": "ts-node dashboard/server.ts"
+    "start": "ts-node scripts/generateEnv.ts && npm run start-sequencer",
+    "start-sequencer": "npx hardhat run sequencer/sequencer.ts"
   },
   "keywords": [],
   "author": "",

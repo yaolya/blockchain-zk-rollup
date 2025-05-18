@@ -16,9 +16,8 @@ type Transaction = {
 
 const nodeId = process.env.NODE_ID || 'default-node';
 
+const MAX_TOTAL_TX = 200;
 const BATCH_SIZE_LIMIT = 20;
-const BATCH_INTERVAL_MS = 3_000;
-const MAX_ESTIMATED_GAS_PER_BATCH = 1_500_000;
 
 const pendingTxs: Transaction[] = [];
 let state = 0;
@@ -40,7 +39,7 @@ if (!fs.existsSync(archiveDir)) {
 
 if (fs.existsSync(logFilePath)) {
   const content = fs.readFileSync(logFilePath, 'utf-8').trim();
-  if (content && content !== '[]') {
+  if (content && content !== '') {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const archivePath = path.join(archiveDir, `batchLog-${timestamp}.json`);
     try {
@@ -52,7 +51,7 @@ if (fs.existsSync(logFilePath)) {
   } else {
     console.log(`[${nodeId}] No meaningful data to archive`);
   }
-  fs.writeFileSync(logFilePath, '[]');
+  fs.writeFileSync(logFilePath, '');
   console.log(`[${nodeId}] Cleaned batchLog.json for new session`);
 }
 
@@ -113,36 +112,14 @@ async function registerAndVote() {
   console.log(`[${nodeId}] Voted for self.`);
 }
 
-async function main() {
-  const dposManagerAddress = process.env.DPOS_MANAGER_ADDRESS!;
-  await waitForContractCode(dposManagerAddress!);
-  await registerAndVote();
-}
-
-main().catch((err) => {
-  console.error(`[${nodeId}] DPoS init failed:`, err);
-});
-
 async function receiveTransaction(tx: Transaction) {
   pendingTxs.push(tx);
 
-  const estimatedGas = estimateBatchGas(pendingTxs.length);
-
-  if (
-    pendingTxs.length >= BATCH_SIZE_LIMIT ||
-    estimatedGas >= MAX_ESTIMATED_GAS_PER_BATCH
-  ) {
+  if (pendingTxs.length >= BATCH_SIZE_LIMIT) {
     console.log(`[${nodeId}] Threshold reached. Executing batch...`);
-    executeBatch();
+    await executeBatch();
   }
 }
-
-setInterval(() => {
-  if (pendingTxs.length > 0) {
-    console.log(`[${nodeId}] Timer triggered batch execution...`);
-    executeBatch();
-  }
-}, BATCH_INTERVAL_MS);
 
 async function executeBatch() {
   if (pendingTxs.length === 0) {
@@ -158,15 +135,16 @@ async function executeBatch() {
 
   try {
     const root = buildMerkleRoot(batchTxs);
+    const newState = applyTransactions(state, batchTxs);
 
     const gasPerTx = await submitToL1({
       initialState: previousStateValue,
-      finalState: applyTransactions(state, batchTxs),
+      finalState: newState,
       txs: batchTxs.map((tx) => tx.value),
       merkleRoot: root,
     });
 
-    state = applyTransactions(previousStateValue, batchTxs);
+    state = newState;
     cumulativeGas += gasPerTx;
 
     const logEntry = {
@@ -190,9 +168,29 @@ async function executeBatch() {
   }
 }
 
-function estimateBatchGas(numTxs: number) {
-  const gasPerTx = 21_000;
-  return numTxs * gasPerTx;
+async function emitTransactions() {
+  console.log('[*] Simulated transaction emitter started...');
+  let sentTxs = 0;
+  for (let i = 0; i < MAX_TOTAL_TX; i++) {
+    console.log(`Emitting transaction...`);
+    const tx = {
+      op: 'total',
+      key: `key_${sentTxs + i}`,
+      value: Math.floor(Math.random() * 100),
+    };
+    await receiveTransaction(tx);
+    sentTxs += 1;
+  }
+  console.log('Simulation complete');
 }
+
+async function main() {
+  await registerAndVote();
+  await emitTransactions();
+}
+
+main().catch((err) => {
+  console.error(`[${nodeId}] failed:`, err);
+});
 
 export { receiveTransaction, executeBatch };
