@@ -1,4 +1,7 @@
 ## ZK-Rollup Implementation
+
+[![Run tests](https://github.com/yaolya/blockchain-zk-rollup/actions/workflows/test.yml/badge.svg)](https://github.com/yaolya/blockchain-zk-rollup/actions/workflows/test.yml)
+
 This repository contains the implementation of a master’s thesis project focused on a zero-knowledge rollup (zk-rollup) for Ethereum. Designed as a research-driven proof of concept, the project serves as a platform for exploring Layer 2 scaling strategies based on zero-knowledge proofs.
 
 The project focuses on implementing the core components of a zk-rollup system, including transaction batching, proof generation, and state management, while also providing insights into the theoretical and practical aspects of Layer 2 scaling solutions.
