@@ -8,7 +8,7 @@ type LogEntry = {
   gasPerTx: string;
   cumulativeGas: string;
   merkleRoot: string;
-  finalState: number;
+  finalState: string;
 };
 
 function appendBatchLog(entry: LogEntry, filePath: string) {

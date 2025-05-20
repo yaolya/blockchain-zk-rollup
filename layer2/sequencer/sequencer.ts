@@ -20,7 +20,7 @@ const MAX_TOTAL_TX = 200;
 const BATCH_SIZE_LIMIT = 20;
 
 const pendingTxs: Transaction[] = [];
-let state = 0;
+let state = 0n;
 
 let batchCounter = 0;
 let cumulativeGas = 0n;
@@ -129,7 +129,7 @@ async function executeBatch() {
 
   const batchTxs = pendingTxs.splice(0, BATCH_SIZE_LIMIT);
 
-  const previousStateValue = state;
+  const previousStateValue: bigint = state;
 
   try {
     const root = buildMerkleRoot(batchTxs);
@@ -155,8 +155,8 @@ async function executeBatch() {
       transactionCount: batchTxs.length,
       gasPerTx: gasPerTx.toString(),
       cumulativeGas: cumulativeGas.toString(),
-      merkleRoot: root,
-      finalState: state,
+      merkleRoot: root.toString(),
+      finalState: state.toString(),
     };
 
     console.log(`[${nodeId}] Batch #${batchCounter} executed at ${timestamp}`);

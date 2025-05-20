@@ -47,7 +47,9 @@ async function main() {
   console.log('SequencerRegistry deployed to:', sequencerRegistry.target);
   await waitForContractCode(await sequencerRegistry.getAddress());
 
-  const Verifier = await ethers.getContractFactory('BatchProofGroth16Verifier');
+  const Verifier = await ethers.getContractFactory(
+    'BatchProofWithPoseidonGroth16Verifier',
+  );
   const verifier = await Verifier.deploy();
   await verifier.waitForDeployment();
   console.log('Verifier deployed to:', verifier.target);

@@ -9,10 +9,10 @@ import { zkit } from 'hardhat';
 const BATCH_SIZE_LIMIT = 20;
 
 type SubmitInput = {
-  initialState: number;
-  finalState: number;
+  initialState: bigint;
+  finalState: bigint;
   txs: number[];
-  merkleRoot: string;
+  merkleRoot: bigint;
 };
 
 const proofMutex = new Mutex();
@@ -52,7 +52,7 @@ async function submitToL1({
     signer,
   );
 
-  const circuit = await zkit.getCircuit('BatchProof');
+  const circuit = await zkit.getCircuit('BatchProofWithPoseidon');
 
   const paddedTxs = [...txs];
   while (paddedTxs.length < BATCH_SIZE_LIMIT) {
@@ -78,6 +78,12 @@ async function submitToL1({
   const calldata = await circuit.generateCalldata(proof);
   console.log(calldata.publicSignals);
   let tx: ContractTransactionResponse;
+
+  const publicSignalsHex = calldata.publicSignals.map((x) =>
+    ethers.toBeHex(BigInt(x)),
+  );
+
+  const rootHex = ethers.toBeHex(BigInt(merkleRoot));
   if (
     'a' in calldata.proofPoints &&
     'b' in calldata.proofPoints &&
@@ -87,8 +93,8 @@ async function submitToL1({
       calldata.proofPoints.a,
       calldata.proofPoints.b,
       calldata.proofPoints.c,
-      calldata.publicSignals,
-      merkleRoot,
+      publicSignalsHex,
+      rootHex,
     );
   } else {
     throw new Error('Unsupported proof format: expected Groth16');

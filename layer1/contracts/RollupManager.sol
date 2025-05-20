@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "./interfaces/ISequencerRegistry.sol";
-import "./verifiers/BatchProofGroth16Verifier.sol";
+import "./verifiers/BatchProofWithPoseidonGroth16Verifier.sol";
 
 contract RollupManager {
     event NewStateRoot(bytes32 indexed stateRoot, uint256 indexed batchIndex);
@@ -16,7 +16,7 @@ contract RollupManager {
     uint256 public batchCount;
 
     ISequencerRegistry public sequencerRegistry;
-    BatchProofGroth16Verifier public verifier;
+    BatchProofWithPoseidonGroth16Verifier public verifier;
 
     modifier onlySequencer() {
         require(
@@ -28,7 +28,7 @@ contract RollupManager {
 
     constructor(address _registry, address _verifier) {
         sequencerRegistry = ISequencerRegistry(_registry);
-        verifier = BatchProofGroth16Verifier(_verifier);
+        verifier = BatchProofWithPoseidonGroth16Verifier(_verifier);
     }
 
     function submitBatch(
