@@ -6,7 +6,7 @@ import { Mutex } from 'async-mutex';
 import { ContractTransactionResponse, ethers } from 'ethers';
 import { zkit } from 'hardhat';
 
-const BATCH_SIZE_LIMIT = 20;
+const BATCH_SIZE_LIMIT = 400;
 
 type SubmitInput = {
   initialState: bigint;

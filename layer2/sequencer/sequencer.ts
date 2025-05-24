@@ -16,8 +16,8 @@ type Transaction = {
 
 const nodeId = process.env.NODE_ID || 'default-node';
 
-const MAX_TOTAL_TX = 200;
-const BATCH_SIZE_LIMIT = 20;
+const MAX_TOTAL_TX = 2000;
+const BATCH_SIZE_LIMIT = 400;
 
 const pendingTxs: Transaction[] = [];
 let state = 0n;
