@@ -43,6 +43,5 @@ log.txt
 typechain-types/
 
 .env
-.env.*
 
 docker-compose.generated.yml
