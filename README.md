@@ -44,19 +44,14 @@ npm install
 
 ### Launch the System
 
-To start the default configuration with a single sequencer node:
+To launch the complete local testnet, substitute <number_of_nodes> with the number of Layer 2 sequencers you want to deploy:
 
 ```bash
-docker compose up --build
-```
-
-To run with multiple Layer 2 sequencer nodes:
-
-```bash
+./build-zk.sh
 ./generate-layer2-nodes.sh <number_of_nodes>
 docker compose -f docker-compose.generated.yml up --build
 ```
 
 This will start:
-- A Hardhat node with deployed Layer 1 contracts
+- A Hardhat node with deployed Layer 1 smart contracts
 - One or more Layer 2 sequencer nodes
